@@ -7,58 +7,53 @@ predict_last_word <- function(input_string) {
   
   stlength<-str_count(input_string, boundary("word"))
   
+  train2_bigrams_start_dt<-data.table(readRDS("train2_bigrams_start_dt.rds"))
+  train2_trigrams_start_dt<-data.table(readRDS("train2_trigrams_start_dt.rds"))
+  train2_quadgrams_start_dt<-data.table(readRDS("train2_quadgrams_start_dt.rds"))
+  cat(ls())
   
-  #if (stlength >= 6) 
-   #{ 
-    #  teststring <- tolower(last_n_words(input_string, 6))
-     # last_word<-get_last_word(teststring, train_all_septgrams_prob_dt)
-#      if (stlength >= 5)
-#       {
-#          teststring <- tolower(last_n_words(input_string, 5))
-#          last_word<-get_last_word(teststring, train2_sexgrams_prob_dt)
-#          if (is.null(last_word))
-#            {
-#	            teststring <- tolower(last_n_words(input_string, 4))
-#	            last_word<-get_last_word(teststring, train2_quingrams_prob_dt)
-#	            if (is.null(last_word))
-              if (stlength >= 4)
-	              {
-	                teststring <- tolower(last_n_words(input_string, 3))
-	                last_word <- get_last_word(teststring, train2_quadgrams_start_dt)
+  setkey(train2_bigrams_start_dt, start)
+  setkey(train2_trigrams_start_dt, start)
+  setkey(train2_trigrams_start_dt, start)
+  
+  cat(ls())
+  
+  
+    if (stlength >= 4)
+      {
+          teststring <- tolower(last_n_words(input_string, 3))
+          last_word <- get_last_word(teststring, train2_quadgrams_start_dt)
 	               
-	                if (is.null(last_word))
-        	           {
-	                      teststring <- last_n_words(input_string, 2)
-	                      last_word <- get_last_word(teststring, train2_trigrams_start_dt)
-	                      if (is.null(last_word))
-	                        {
-	                          teststring <- last_n_words(input_string,1)
-	                          last_word <- get_last_word(teststring, train2_bigrams_start_dt)
-	                        }
-	                }
+          if (is.null(last_word))
+	           {
+                teststring <- tolower(last_n_words(input_string, 2))
+                last_word <- get_last_word(teststring, train2_trigrams_start_dt)
+                if (is.null(last_word))
+                    {
+                      teststring <- tolower(last_n_words(input_string,1))
+                      last_word <- get_last_word(teststring, train2_bigrams_start_dt)
+                    }
               }
-#	                }
-#              }
-#         }
+        }
   else
-    {
+      {
         if (stlength == 3) 
 	        {
-	          teststring <- last_n_words(input_string, 3)
+	          teststring <- tolower(last_n_words(input_string, 3))
 		        last_word<-get_last_word(teststring, train2_quadgrams_start_dt) 
            }
 	      else
 	        {
 		        if (stlength == 2)
 		          {
-			          teststring <- last_n_words(input_string, 2)
+			          teststring <- tolower(last_n_words(input_string, 2))
 			          last_word<-get_last_word(teststring, train2_trigrams_start_dt)
 		          }
 		      else
 		          {
 		            if (stlength == 1)
 		              {
-			              teststring <- last_n_words(input_string, 1)
+			              teststring <- tolower(last_n_words(input_string, 1))
 			              last_word <- get_last_word(teststring, train2_bigrams_start_dt)
 		              } 
 	            }
