@@ -5,60 +5,87 @@ predict_last_word <- function(input_string) {
   #library(tidytext)
   #library(dplyr)
   
-  stlength<-str_count(input_string, boundary("word"))
+  train2_bigrams_start_dt<-readRDS("train2_bigrams_start_dt.rds")
+  train2_trigrams_start_dt<-readRDS("train2_trigrams_start_dt.rds")
+  train2_quadgrams_start_dt<-readRDS("train2_quadgrams_start_dt.rds")
   
-  train2_bigrams_start_dt<-data.table(readRDS("train2_bigrams_start_dt.rds"))
-  train2_trigrams_start_dt<-data.table(readRDS("train2_trigrams_start_dt.rds"))
-  train2_quadgrams_start_dt<-data.table(readRDS("train2_quadgrams_start_dt.rds"))
-  cat(ls())
+  stlength<-str_count(input_string, boundary("word"))
   
   setkey(train2_bigrams_start_dt, start)
   setkey(train2_trigrams_start_dt, start)
   setkey(train2_trigrams_start_dt, start)
-  
-  cat(ls())
-  
-  
-    if (stlength >= 4)
+  if (stlength >= 4)
       {
           teststring <- tolower(last_n_words(input_string, 3))
           last_word <- get_last_word(teststring, train2_quadgrams_start_dt)
-	               
           if (is.null(last_word))
 	           {
                 teststring <- tolower(last_n_words(input_string, 2))
+                print("At 4.2 teststring is")
+                print(teststring)
                 last_word <- get_last_word(teststring, train2_trigrams_start_dt)
                 if (is.null(last_word))
                     {
                       teststring <- tolower(last_n_words(input_string,1))
                       last_word <- get_last_word(teststring, train2_bigrams_start_dt)
+                      if (is.null(last_word))
+                      {
+                        last_word <- "Sorry. I can't predict the last word."
+                      }
                     }
-              }
-        }
-  else
-      {
-        if (stlength == 3) 
+                }                
+          }
+      else
+        {
+          if (stlength == 3) 
 	        {
-	          teststring <- tolower(last_n_words(input_string, 3))
-		        last_word<-get_last_word(teststring, train2_quadgrams_start_dt) 
-           }
-	      else
-	        {
-		        if (stlength == 2)
-		          {
-			          teststring <- tolower(last_n_words(input_string, 2))
-			          last_word<-get_last_word(teststring, train2_trigrams_start_dt)
+            teststring <- tolower(last_n_words(input_string, 3))
+            last_word<-get_last_word(teststring, train2_quadgrams_start_dt) 
+            if (is.null(last_word))
+               {
+                  teststring <- tolower(last_n_words(input_string, 2))
+                  last_word <- get_last_word(teststring, train2_trigrams_start_dt)
+                  if (is.null(last_word))
+                    {
+                      teststring <- tolower(last_n_words(input_string,1))
+                      last_word <- get_last_word(teststring, train2_bigrams_start_dt)
+                      if (is.null(last_word))
+                        {
+                          last_word <- "Sorry. I can't predict the last word."
+                        }
+                    }
+                }
+             }  
+  	      else
+	          {
+		          if (stlength == 2)
+		            {
+			            teststring <- tolower(last_n_words(input_string, 2))
+			            last_word<-get_last_word(teststring, train2_trigrams_start_dt)
+		              if (is.null(last_word))
+	                  {
+	                  teststring <- tolower(last_n_words(input_string,1))
+	                  last_word <- get_last_word(teststring, train2_bigrams_start_dt)
+        	          if (is.null(last_word))
+	                    {
+	                        last_word <- "Sorry. I can't predict the last word."
+        	            }
+		              }
 		          }
-		      else
+		        else
 		          {
 		            if (stlength == 1)
 		              {
 			              teststring <- tolower(last_n_words(input_string, 1))
 			              last_word <- get_last_word(teststring, train2_bigrams_start_dt)
-		              } 
-	            }
-	        }
-    }
+		                if (is.null(last_word))
+		                    {
+		                      last_word <- "Sorry. I can't predict the last word."
+		                    }
+	                  }
+	              }
+	          }
+        }
   return(last_word)
 }
 
@@ -80,7 +107,7 @@ get_last_word <- function(instring, ngram_prob) {
     
     if (is.na(top_phrases))
 	     {
-	      return("Sorry. I can't predict this word.")
+	      return(NULL)
 	      }
     else
 	    {
